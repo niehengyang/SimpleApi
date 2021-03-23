@@ -1,0 +1,729 @@
+definitions:
+  Middlewares.Response:
+    properties:
+      data:
+        type: object
+      errmsg:
+        type: string
+      errno:
+        type: integer
+    type: object
+  Models.LoginInput:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  Models.Permission:
+    properties:
+      createdAt:
+        $ref: '#/definitions/Models.XTime'
+      deletedAt:
+        $ref: '#/definitions/Models.XTime'
+      describe:
+        type: string
+      icon:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      parent:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      uid:
+        type: string
+      updatedAt:
+        $ref: '#/definitions/Models.XTime'
+      url:
+        type: string
+    type: object
+  Models.Role:
+    properties:
+      createdAt:
+        $ref: '#/definitions/Models.XTime'
+      deletedAt:
+        $ref: '#/definitions/Models.XTime'
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      permission:
+        items:
+          $ref: '#/definitions/Models.Permission'
+        type: array
+      updatedAt:
+        $ref: '#/definitions/Models.XTime'
+      user:
+        $ref: '#/definitions/Models.User'
+      user_id:
+        type: integer
+    type: object
+  Models.RoleForm:
+    properties:
+      Permissions:
+        items:
+          type: integer
+        type: array
+      createdAt:
+        $ref: '#/definitions/Models.XTime'
+      deletedAt:
+        $ref: '#/definitions/Models.XTime'
+      desc:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      permission:
+        items:
+          $ref: '#/definitions/Models.Permission'
+        type: array
+      updatedAt:
+        $ref: '#/definitions/Models.XTime'
+      user:
+        $ref: '#/definitions/Models.User'
+      user_id:
+        type: integer
+    type: object
+  Models.User:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        $ref: '#/definitions/Models.XTime'
+      deletedAt:
+        $ref: '#/definitions/Models.XTime'
+      describe:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role:
+        items:
+          $ref: '#/definitions/Models.Role'
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        $ref: '#/definitions/Models.XTime'
+      username:
+        type: string
+    type: object
+  Models.UserForm:
+    properties:
+      Roles:
+        items:
+          type: integer
+        type: array
+      avatar:
+        type: string
+      createdAt:
+        $ref: '#/definitions/Models.XTime'
+      deletedAt:
+        $ref: '#/definitions/Models.XTime'
+      describe:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role:
+        items:
+          $ref: '#/definitions/Models.Role'
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        $ref: '#/definitions/Models.XTime'
+      username:
+        type: string
+    type: object
+  Models.XTime:
+    properties:
+      time.Time:
+        type: string
+    type: object
+host: localhost:8088
+info:
+  contact:
+    email: 790227542@qq.com
+    name: www.topgoer.com
+    url: https://www.topgoer.com
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://www.topgoer.com
+  title: 自定义项目API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 用户登录接口
+      parameters:
+      - description: 登录参数
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/Models.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户登录
+      tags:
+      - 鉴权相关接口
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: 注销登录接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 注销登录
+      tags:
+      - 鉴权相关接口
+  /v1/bindpermissions:
+    put:
+      consumes:
+      - application/json
+      description: 角色绑定权限接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 权限数组
+        in: body
+        name: data
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 角色绑定权限
+      tags:
+      - 角色相关接口
+  /v1/bindroles:
+    put:
+      consumes:
+      - application/json
+      description: 用户绑定角色接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色数组
+        in: body
+        name: data
+        schema:
+          items:
+            $ref: '#/definitions/Models.RoleForm'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户绑定角色
+      tags:
+      - 用户相关接口
+  /v1/createrole:
+    post:
+      consumes:
+      - application/json
+      description: 新建角色接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色结构体
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/Models.RoleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 新建角色
+      tags:
+      - 角色相关接口
+  /v1/createuser:
+    post:
+      consumes:
+      - application/json
+      description: 创建账号接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 表单对象
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/Models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建账号
+      tags:
+      - 用户相关接口
+  /v1/deleterole:
+    delete:
+      consumes:
+      - application/json
+      description: 删除角色接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuths: []
+      summary: 删除角色
+      tags:
+      - 角色相关接口
+  /v1/deleteuser:
+    delete:
+      consumes:
+      - application/json
+      description: 删除用户接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuths: []
+      summary: 删除用户
+      tags:
+      - 用户相关接口
+  /v1/editrole:
+    put:
+      consumes:
+      - application/json
+      description: 编辑角色接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色结构体
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/Models.RoleForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑角色
+      tags:
+      - 角色相关接口
+  /v1/edituser:
+    put:
+      consumes:
+      - application/json
+      description: 编辑用户接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户表单数据
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/Models.UserForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 编辑用户
+      tags:
+      - 用户相关接口
+  /v1/getloginuser:
+    get:
+      consumes:
+      - application/json
+      description: 查询登录用户信息接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询登录用户信息
+      tags:
+      - 用户相关接口
+  /v1/getpermissionall:
+    get:
+      consumes:
+      - application/json
+      description: 查询所有权限接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询所有权限
+      tags:
+      - 权限相关接口
+  /v1/getpermissionlist:
+    get:
+      consumes:
+      - application/json
+      description: 查询权限列表接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 单页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询权限列表
+      tags:
+      - 权限相关接口
+  /v1/getroleitem:
+    get:
+      consumes:
+      - application/json
+      description: 角色详情接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 角色详情
+      tags:
+      - 角色相关接口
+  /v1/getrolelist:
+    get:
+      consumes:
+      - application/json
+      description: 查询角色列表接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色名称
+        in: query
+        name: Name
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 单页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询角色列表
+      tags:
+      - 角色相关接口
+  /v1/getrolepermissions:
+    get:
+      consumes:
+      - application/json
+      description: 角色权限接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 角色权限
+      tags:
+      - 角色相关接口
+  /v1/getuseritem:
+    get:
+      consumes:
+      - application/json
+      description: 查询用户详情接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询用户详情
+      tags:
+      - 用户相关接口
+  /v1/getuserlist:
+    get:
+      consumes:
+      - application/json
+      description: 查询用户列表接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 用户名
+        in: query
+        name: username
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 单页数量
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询用户列表
+      tags:
+      - 用户相关接口
+  /v1/uploadfile:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 上传文件接口
+      parameters:
+      - description: 用户令牌
+        in: header
+        name: token
+        type: string
+      - description: 文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - multipart/form-data
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Middlewares.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 上传文件
+      tags:
+      - 文件传输接口
+swagger: "2.0"
